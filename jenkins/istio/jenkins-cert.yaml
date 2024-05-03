@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dme-jenkins-cert
+  namespace: istio-system
+spec:
+  secretName: dme-jenkins-cert
+  dnsNames:
+  - 'jenkins.datamuseengine.com'
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer

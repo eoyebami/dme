@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: jenkins-gateway
+  namespace: jenkins
+spec:
+  selector: # select for the ingress gateway controller you want to balance traffic through
+    istio: ingressgateway # default label set for all ingressgateways
+  servers:
+  - hosts:
+    - "jenkins.datamuseengine.com"
+    port:
+      number: 80
+      name: http
+      protocol: HTTP
+    tls:
+      httpsRedirect: true
+  - hosts:
+    - "jenkins.datamuseengine.com"
+    port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: dme-jenkins-cert
