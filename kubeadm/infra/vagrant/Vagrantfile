@@ -1,0 +1,45 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+IP_NW = "10.0.0."
+NUM_MASTER_NODES = 1
+NUM_WORKER_NODES = 1
+MASTER_IP_START = 10
+NODE_IP_START = 20
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.boot_timeout = 900
+
+  # define masters
+  (1..NUM_MASTER_NODES).each do |i|
+    config.vm.define "controlplane0#{i}" do |master|
+      master.vm.provider "virtualbox" do |vb|
+        vb.name = "controlplane0#{i}"
+        vb.memory = 2048
+        vb.cpus = 2
+      end
+      master.vm.hostname = "controlplane0#{i}"
+      master.vm.network "private_network", ip: IP_NW + "#{MASTER_IP_START + i}"
+      master.vm.network "forwarded_port", guest: 31084, host: 443, auto_correct: false
+      master.vm.network "forwarded_port", guest: 22, host: 2222, auto_correct: false
+      master.vm.provision "shell", path: "shared-dependencies.sh" 
+      master.vm.provision "shell", path: "init-cluster.sh" 
+      master.vm.provision "file", source: "install-cluster-addons.sh", destination: "/home/vagrant/install-cluster-addons.sh"
+    end
+  end
+
+  # define workers
+  (1..NUM_WORKER_NODES).each do |i|
+    config.vm.define "node0#{i}" do |worker|
+       worker.vm.provider "virtualbox" do |vb|
+         vb.name = "node0#{i}"
+         vb.memory = 5120
+         vb.cpus = 2
+       end
+       worker.vm.hostname = "node0#{i}"
+       worker.vm.network "private_network", ip: IP_NW + "#{NODE_IP_START + i}"
+       worker.vm.provision "shell", path: "shared-dependencies.sh"
+     end
+   end
+end

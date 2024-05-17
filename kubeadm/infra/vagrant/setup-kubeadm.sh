@@ -1,0 +1,25 @@
+#!/bin/bash
+set -x
+
+# launch cluster nodes
+fileStatus=$(vagrant validate)
+if [[ "${fileStatus}" == *"success"* ]]
+then 
+  vagrant up
+else
+  echo "Vagrantfile failed to validate"
+  exit 1
+fi
+
+# retrieve add worker kubeadm command
+addWorkerCmd=$(vagrant ssh controlplane01 -c "kubeadm token create --print-join-command")
+
+# add worker nodes to kubeadm cluster
+workerNodes=$(vagrant status | grep node | awk '{print$1}' | tr -d "\n")
+for node in ${workerNodes}
+do
+  vagrant ssh ${node} -c "sudo ${addWorkerCmd}"
+done
+
+# install cluster add-ons
+vagrant ssh controlplane01 -c 'bash install-cluster-addons.sh'
