@@ -19,6 +19,8 @@ workerNodes=$(vagrant status | grep node | awk '{print$1}' | tr -d "\n")
 for node in ${workerNodes}
 do
   vagrant ssh ${node} -c "sudo ${addWorkerCmd}"
+  vagrant ssh ${node} -c "echo 'serverTLSBootstrap: true' | sudo tee -a /var/lib/kubelet/config.yaml"
+  vagrant ssh ${node} -c "sudo systemctl restart kubelet"
 done
 
 # install cluster add-ons

@@ -12,6 +12,9 @@ export KUBECTL_VERSION="1.29.4-2.1"
 sed -i -e 's/#DNS=/DNS=8.8.8.8/' /etc/systemd/resolved.conf
 service systemd-resolved restart
 
+# Set up ssh-keys
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
+
 # modules necessay for k8 networking and volume support
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
@@ -97,11 +100,6 @@ sudo apt-mark hold kubelet kubeadm kubectl
 # set primary ip for kubelet
 cat <<EOF | sudo tee /etc/default/kubelet
 KUBELET_EXTRA_ARGS='--node-ip ${PRIMARY_IP}'
-EOF
-
-# Add TLS Bootstrap for kubelet
-cat <<EOF | sudo tee /var/lib/kubelet/config.yaml
-serverTLSBootstrap: true
 EOF
 
 # Restart kubelet service
