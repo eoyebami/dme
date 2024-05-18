@@ -12,9 +12,6 @@ export KUBECTL_VERSION="1.29.4-2.1"
 sed -i -e 's/#DNS=/DNS=8.8.8.8/' /etc/systemd/resolved.conf
 service systemd-resolved restart
 
-# Set up ssh-keys
-ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
-
 # modules necessay for k8 networking and volume support
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
@@ -45,7 +42,7 @@ sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables ne
 # Installing CRT
 echo "**********Installing CRT**********"
 sudo apt-get update
-sudo apt-get install ca-certificates curl jq -y
+sudo apt-get install ca-certificates curl jq sshpass -y
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
@@ -104,3 +101,11 @@ EOF
 
 # Restart kubelet service
 sudo systemctl restart kubelet
+
+# Set up ssh-keys
+echo "**********Enable PassAuth and Generating Keys**********"
+sudo -H -u vagrant bash -c 'ssh-keygen -t ed25519 -N "" -f /home/vagrant/.ssh/id_ed25519'
+
+# Set sshd_config to PasswordAuth
+sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
