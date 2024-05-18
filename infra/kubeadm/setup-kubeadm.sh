@@ -73,7 +73,7 @@ startCluster () {
     do
       if [[ "${node}" != "${clusterNode}" ]]
       then
-        vagrant ssh "${node}" -c "sshpass -p vagrant ssh-copy-id ${clusterNode} -p 22" || true
+        vagrant ssh "${node}" -c "sshpass -p vagrant ssh-copy-id ${clusterNode} -o StrictHostKeyChecking=no -p 22"
       fi
     done
   done
