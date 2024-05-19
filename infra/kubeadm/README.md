@@ -15,15 +15,15 @@ This repository consists of scripts related to KubeAdm cluster set up on a vagra
 
 ## Steps to deploy KubeAdm
 - `Deploy Cluster for the first time`: this will spin up the kubeadm cluster
-```
+```bash
     ./setup-kubeadm.sh start
 ```
 - `Recreate Cluster`: if you encounter any issues, this will tear down and recreate the cluster
-```
+```baah
     ./setup-kubeadm.sh restart
 ```
 - `Destroy Cluster`: this will tear down the cluster
-```
+```bash
     ./setup-kubeadm.sh destroy
 ```
 
