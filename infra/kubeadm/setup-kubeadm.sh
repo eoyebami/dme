@@ -90,21 +90,22 @@ startCluster () {
   done
 }
 
+destroyCluster () {
+  vagrant destroy --force
+  echo "*********************************"
+  echo "Virtual Machines have been removed"
+  echo "*********************************"
+}
+
 case "$1" in
     "start")
       startCluster
     ;;
     "restart")
-      vagrant destroy --force
-      echo "*********************************"
-      echo "Virtual Machines have been removed"
-      echo "*********************************"
+      destroyCluster
       startCluster 
     ;;
     "destroy")
-      vagrant destroy --force 
-      echo "*********************************"
-      echo "Virtual Machines have been removed"
-      echo "*********************************"
+      destroyCluster
     ;;
 esac
